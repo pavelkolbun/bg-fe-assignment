@@ -126,7 +126,7 @@ Measured with **default server flags**:
 
 ## What to hand in
 
-A repository (link or archive) with:
+A repository (link) with:
 
 1. The app, with `README` run instructions (`pnpm i && pnpm dev` should be enough).
 2. `DECISIONS.md` - your key decisions, the alternatives you rejected and why, what you cut, and what you'd do next with more time. One page is plenty.
