@@ -1,0 +1,12 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
+    "extends": ["@betgames/biome-config/base", "@betgames/biome-config/node"],
+    "files": {
+        "includes": ["**", "!**/dist"]
+    },
+    "javascript": {
+        "parser": {
+            "unsafeParameterDecoratorsEnabled": true
+        }
+    }
+}

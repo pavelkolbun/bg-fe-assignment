@@ -1,0 +1,38 @@
+{
+    "name": "crash-feed-server",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Hostile mock WebSocket crash-game feed for the front-end take-home assignment",
+    "license": "UNLICENSED",
+    "packageManager": "pnpm@10.30.0",
+    "engines": {
+        "node": ">=20"
+    },
+    "scripts": {
+        "build": "nest build",
+        "start": "nest build && node dist/main.js",
+        "test": "vitest run",
+        "format": "biome format --write",
+        "check": "biome check --write",
+        "lint": "biome lint",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@nestjs/common": "11.1.6",
+        "@nestjs/core": "11.1.6",
+        "@nestjs/platform-express": "11.1.6",
+        "@nestjs/platform-ws": "11.1.6",
+        "@nestjs/websockets": "11.1.6",
+        "reflect-metadata": "0.2.2",
+        "rxjs": "7.8.2",
+        "ws": "8.18.3"
+    },
+    "devDependencies": {
+        "@betgames/biome-config": "1.1.0",
+        "@nestjs/cli": "11.0.10",
+        "@types/node": "22.18.0",
+        "@types/ws": "8.18.1",
+        "typescript": "5.9.2",
+        "vitest": "3.2.4"
+    }
+}
