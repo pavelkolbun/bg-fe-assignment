@@ -82,4 +82,45 @@ describe("FeedPipeline", () => {
 
     expect(received).toEqual([1, 2, 3, 4]);
   });
+
+
+  // Reset
+
+  it("resets pipeline after snapshot", () => {
+    const received: number[] = [];
+
+    const pipeline = new FeedPipeline({
+      onMessage(message) {
+        received.push(message.seq);
+      },
+    });
+
+    pipeline.receive(createMessage(10));
+    pipeline.receive(createMessage(12));
+
+    pipeline.reset(11);
+
+    pipeline.receive(createMessage(12));
+
+    expect(received).toEqual([10, 12]);
+  });
+
+  it("clears buffered messages after snapshot", () => {
+    const received: number[] = [];
+
+    const pipeline = new FeedPipeline({
+      onMessage(message) {
+        received.push(message.seq);
+      },
+    });
+
+    pipeline.receive(createMessage(1));
+    pipeline.receive(createMessage(3)); // seq 3 waits for seq 2
+
+    pipeline.reset(2);
+
+    pipeline.receive(createMessage(3));
+
+    expect(received).toEqual([1, 3]);
+  });
 });

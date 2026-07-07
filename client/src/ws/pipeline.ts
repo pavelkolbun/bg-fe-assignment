@@ -67,8 +67,9 @@ export class FeedPipeline {
     }
   }
 
-  reset(_snapshotSeq: number): void {
-    // todo: later
+  reset(snapshotSeq: number): void {
+    this.expectedSeq = snapshotSeq + 1;
+    this.buffer.clear();
   }
 
   getStats(): PipelineStats {
