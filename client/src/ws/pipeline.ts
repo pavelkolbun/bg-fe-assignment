@@ -68,6 +68,8 @@ export class FeedPipeline {
   }
 
   reset(snapshotSeq: number): void {
+    // Snapshot is authoritative after reconnect.
+    // Any buffered feed events may belong to the old connection state.
     this.expectedSeq = snapshotSeq + 1;
     this.buffer.clear();
   }
