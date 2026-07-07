@@ -15,6 +15,7 @@ export class FeedPipeline {
   private expectedSeq: number | null = null;
 
   private readonly buffer = new Map<number, FeedMessage>();
+  private readonly handlers: PipelineHandlers;
 
   private readonly stats: PipelineStats = {
     duplicates: 0,
@@ -22,7 +23,9 @@ export class FeedPipeline {
     gaps: 0,
   };
 
-  constructor(private readonly handlers: PipelineHandlers) {}
+  constructor(handlers: PipelineHandlers) {
+    this.handlers = handlers;
+  }
 
   private emit(message: FeedMessage): void {
     this.handlers.onMessage(message);
@@ -37,7 +40,13 @@ export class FeedPipeline {
       this.expectedSeq = message.seq;
     }
 
-    if (message.seq < this.expectedSeq) {
+    const expectedSeq = this.expectedSeq;
+
+    if (expectedSeq === null) {
+      return;
+    }
+
+    if (message.seq < expectedSeq) {
       this.stats.duplicates++;
       return;
     }
@@ -47,7 +56,7 @@ export class FeedPipeline {
       return;
     }
 
-    if (message.seq > this.expectedSeq) {
+    if (message.seq > expectedSeq) {
       this.stats.outOfOrder++;
       this.buffer.set(message.seq, message);
       return;
