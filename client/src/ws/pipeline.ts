@@ -57,6 +57,10 @@ export class FeedPipeline {
     }
 
     if (message.seq > expectedSeq) {
+      if (this.buffer.size === 0) {
+        this.stats.gaps++;
+        this.handlers.onGap?.(expectedSeq, message.seq);
+      }
       this.stats.outOfOrder++;
       this.buffer.set(message.seq, message);
       return;
