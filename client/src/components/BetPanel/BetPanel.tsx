@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useStoreContext } from '../../state/context';
-import { useCashOut, usePlaceBet, useRound, useYourBet } from '../../state/hooks';
+import { useCashOut, useConnection, usePlaceBet, useRound, useYourBet } from '../../state/hooks';
 
 const MIN_AMOUNT = 1;
 const MAX_AMOUNT = 500;
@@ -8,9 +8,11 @@ const MAX_AMOUNT = 500;
 export function BetPanel(): React.JSX.Element {
   const round = useRound();
   const yourBet = useYourBet();
+  const connection = useConnection();
   const placeBet = usePlaceBet();
   const cashOut = useCashOut();
   const { store } = useStoreContext();
+  const isLive = connection.status === 'live';
   const [amount, setAmount] = useState('25.00');
   const [now, setNow] = useState(() => Date.now());
 
@@ -26,7 +28,9 @@ export function BetPanel(): React.JSX.Element {
   const drift = store.getConnectionSnapshot().stats.driftMs;
   const secondsLeft = round.phaseEndsAt !== null ? Math.max(0, (round.phaseEndsAt - (now + drift)) / 1000) : 0;
 
-  const canPlaceBet = round.phase === 'betting' && (yourBet.status === 'idle' || yourBet.status === 'rejected');
+  const canPlaceBet =
+    isLive && round.phase === 'betting' && (yourBet.status === 'idle' || yourBet.status === 'rejected');
+  const canCashOut = isLive && round.phase === 'flight' && yourBet.status === 'active';
 
   return (
     <section className="bet-panel" aria-label="Your bet">
@@ -59,7 +63,11 @@ export function BetPanel(): React.JSX.Element {
       )}
 
       {round.phase === 'flight' && yourBet.status === 'active' && (
-        <button className="bet-button cashout" onClick={() => yourBet.betId && cashOut(yourBet.betId)}>
+        <button
+          className="bet-button cashout"
+          disabled={!canCashOut}
+          onClick={() => yourBet.betId && cashOut(yourBet.betId)}
+        >
           Cash out
         </button>
       )}
@@ -71,12 +79,15 @@ export function BetPanel(): React.JSX.Element {
       )}
 
       <div className="bet-status-line">
-        {yourBet.status === 'rejected' && <span className="bet-msg bet-msg-bad">rejected: {yourBet.rejectReason}</span>}
-        {yourBet.status === 'cashed_out' && (
+        {!isLive && <span className="bet-msg bet-msg-muted">{connection.status}… betting paused</span>}
+        {isLive && yourBet.status === 'rejected' && (
+          <span className="bet-msg bet-msg-bad">rejected: {yourBet.rejectReason}</span>
+        )}
+        {isLive && yourBet.status === 'cashed_out' && (
           <span className="bet-msg bet-msg-good">cashed out at {yourBet.cashedAt?.toFixed(2)}×</span>
         )}
-        {yourBet.status === 'lost' && <span className="bet-msg bet-msg-bad">lost — round crashed</span>}
-        {yourBet.status === 'idle' && round.phase !== 'betting' && (
+        {isLive && yourBet.status === 'lost' && <span className="bet-msg bet-msg-bad">lost — round crashed</span>}
+        {isLive && yourBet.status === 'idle' && round.phase !== 'betting' && (
           <span className="bet-msg bet-msg-muted">wait for the next round</span>
         )}
       </div>
