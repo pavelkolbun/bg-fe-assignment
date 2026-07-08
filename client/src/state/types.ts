@@ -1,4 +1,11 @@
 import type { Phase } from '../ws/protocol';
+import type { AnomalyEntry, ConnectionStatus, FeedStats } from '../ws/client';
+
+export interface ConnectionSnapshot {
+  status: ConnectionStatus;
+  stats: FeedStats;
+  anomalies: AnomalyEntry[];
+}
 
 export type BetRowStatus = 'active' | 'cashed_out' | 'pending' | 'rejected';
 

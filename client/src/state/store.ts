@@ -8,7 +8,7 @@ import type {
   SnapshotMsg,
   WireBet,
 } from '../ws/protocol';
-import type {BetView, DisplayStatus, RoundSnapshot, TickerAnchor, YourBetSnapshot} from './types';
+import type {BetView, ConnectionSnapshot, DisplayStatus, RoundSnapshot, TickerAnchor, YourBetSnapshot} from './types';
 
 type Listener = () => void;
 type TickerListener = (anchor: TickerAnchor) => void;
@@ -64,16 +64,18 @@ export class Store {
   private tickerListeners = new Set<TickerListener>();
 
   // ---- connection ---------------------------------------------------------
-  private connectionStatus: ConnectionStatus = 'connecting';
-  private stats: FeedStats = {
-    lastSeq: 0,
-    duplicates: 0,
-    outOfOrderFixed: 0,
-    gapsDetected: 0,
-    reconnects: 0,
-    driftMs: 0,
+  private connectionSnapshot: ConnectionSnapshot = {
+    status: 'connecting',
+    stats: {
+      lastSeq: 0,
+      duplicates: 0,
+      outOfOrderFixed: 0,
+      gapsDetected: 0,
+      reconnects: 0,
+      driftMs: 0,
+    },
+    anomalies: [],
   };
-  private anomalies: AnomalyEntry[] = [];
   private connectionListeners = new Set<Listener>();
 
   // ---- your bet -----------------------------------------------------------
@@ -135,11 +137,7 @@ export class Store {
     return () => this.connectionListeners.delete(cb);
   };
 
-  getConnectionSnapshot = () => ({
-    status: this.connectionStatus,
-    stats: this.stats,
-    anomalies: this.anomalies,
-  });
+  getConnectionSnapshot = (): ConnectionSnapshot => this.connectionSnapshot;
 
   // === your bet ==============================================================
 
@@ -215,15 +213,13 @@ export class Store {
 
   // === mutation helpers (connection) =========================================
 
-  private notifyConnection(): void {
+  private updateConnection(patch: Partial<ConnectionSnapshot>): void {
+    this.connectionSnapshot = { ...this.connectionSnapshot, ...patch };
     this.connectionListeners.forEach((cb) => cb());
   }
 
-  private pushAnomaly(entry: AnomalyEntry): void {
-    this.anomalies = [entry, ...this.anomalies].slice(0, MAX_ANOMALIES);
-  }
-
   // === mutation helpers (your bet) ===========================================
+
 
   private setYourBet(patch: Partial<YourBetSnapshot>): void {
     this.yourBet = { ...this.yourBet, ...patch };
@@ -262,18 +258,12 @@ export class Store {
 
   /** Handlers passed straight to `new FeedClient(url, handlers)`. */
   handlers: FeedClientHandlers = {
-    onStatus: (status: ConnectionStatus) => {
-      this.connectionStatus = status;
-      this.notifyConnection();
-    },
-    onStats: (stats: FeedStats) => {
-      this.stats = stats;
-      this.notifyConnection();
-    },
-    onAnomaly: (entry: AnomalyEntry) => {
-      this.pushAnomaly(entry);
-      this.notifyConnection();
-    },
+    onStatus: (status: ConnectionStatus) => this.updateConnection({ status }),
+    onStats: (stats: FeedStats) => this.updateConnection({ stats }),
+    onAnomaly: (entry: AnomalyEntry) =>
+      this.updateConnection({
+        anomalies: [entry, ...this.connectionSnapshot.anomalies].slice(0, MAX_ANOMALIES),
+      }),
     onSnapshot: (msg: SnapshotMsg) => this.applySnapshot(msg),
     onFeed: (msg: FeedMessage) => this.applyFeed(msg),
     onReply: (msg: AnyServerMessage) => this.applyReply(msg),
