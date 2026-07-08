@@ -1,5 +1,7 @@
+import {StoreProvider} from "@/state/context.tsx";
+
 export function App(): React.JSX.Element {
   return (
-    <>Init</>
+    <StoreProvider>Init</StoreProvider>
   );
 }
