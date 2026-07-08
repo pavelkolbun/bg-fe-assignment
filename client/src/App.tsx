@@ -1,7 +1,11 @@
-import {StoreProvider} from "@/state/context.tsx";
+import {StoreProvider} from "./state/context.tsx";
+import {BetsTable} from "./components/BetsTable/BetsTable.tsx";
 
 export function App(): React.JSX.Element {
   return (
-    <StoreProvider>Init</StoreProvider>
+    <StoreProvider>
+      Init
+      <BetsTable />
+    </StoreProvider>
   );
 }
