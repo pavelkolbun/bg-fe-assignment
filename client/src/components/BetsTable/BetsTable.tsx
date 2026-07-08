@@ -2,10 +2,12 @@ import { useRef } from 'react';
 import { useVirtualRange } from '../../hooks/useVirtualRange.ts';
 import { useBetOrder } from '../../state/hooks.ts';
 import { BetRow } from '../BetRow/BetRow.tsx';
+import {trackRender} from "../../debug/renderTracker.ts";
 
 const ROW_HEIGHT = 32;
 
 export function BetsTable(): React.JSX.Element {
+  trackRender('__table_container__');
   const order = useBetOrder();
   const containerRef = useRef<HTMLDivElement>(null);
   const { start, end, totalHeight, offsetY } = useVirtualRange(containerRef, order.length, ROW_HEIGHT);

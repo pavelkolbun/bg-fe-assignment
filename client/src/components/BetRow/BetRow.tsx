@@ -2,6 +2,7 @@ import { memo, useEffect, useRef } from 'react';
 import { useBetRow, useRound } from '../../state/hooks.ts';
 import { type DisplayStatus } from '../../state/types';
 import {deriveDisplayStatus} from "../../state/store.ts";
+import {trackRender} from "../../debug/renderTracker.ts";
 
 const STATUS_LABEL: Record<DisplayStatus, string> = {
   active: 'active',
@@ -12,6 +13,7 @@ const STATUS_LABEL: Record<DisplayStatus, string> = {
 };
 
 function BetRowImpl({ id }: { id: string }): React.JSX.Element | null {
+  trackRender(id);
   const bet = useBetRow(id);
   const round = useRound();
   const rowRef = useRef<HTMLDivElement>(null);
