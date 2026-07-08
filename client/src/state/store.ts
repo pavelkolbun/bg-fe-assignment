@@ -61,6 +61,7 @@ export class Store {
   };
   private roundListeners = new Set<Listener>();
   private tickerAnchor: TickerAnchor = { value: 1, serverTime: 0, phase: 'pause' };
+  private lastTickSeq = 0;
   private tickerListeners = new Set<TickerListener>();
 
   // ---- connection ---------------------------------------------------------
@@ -317,6 +318,7 @@ export class Store {
           crashMultiplier: null,
         });
         this.setTicker({ value: 1, serverTime: msg.serverTime, phase: 'betting' });
+        this.lastTickSeq = msg.seq;
         this.setYourBet({
           status: 'idle',
           clientBetId: null,
@@ -330,9 +332,13 @@ export class Store {
         this.applyRoundStart(msg);
         return;
       case 'multiplier_tick':
-        this.setTicker({ value: msg.payload.value, serverTime: msg.serverTime, phase: 'flight' });
+        if (msg.seq > this.lastTickSeq) {
+          this.lastTickSeq = msg.seq;
+          this.setTicker({ value: msg.payload.value, serverTime: msg.serverTime, phase: 'flight' });
+        }
         return;
       case 'round_crash':
+        if (msg.payload.roundId < this.round.roundId) return;
         this.setRound({
           phase: 'crashed',
           crashMultiplier: msg.payload.crashMultiplier,
@@ -360,6 +366,7 @@ export class Store {
   }
 
   private applyRoundStart(msg: RoundStartMsg): void {
+    if (msg.payload.roundId < this.round.roundId) return;
     this.setRound({ phase: 'flight', phaseEndsAt: null });
     this.setTicker({ value: 1, serverTime: msg.serverTime, phase: 'flight' });
   }
