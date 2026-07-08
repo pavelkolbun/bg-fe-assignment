@@ -28,7 +28,6 @@ body {
     color: var(--text);
 }
 
-
 .app {
     display: flex;
     flex-direction: column;
@@ -49,4 +48,317 @@ body {
     flex-direction: column;
     gap: 12px;
     min-height: 0;
+}
+
+/* status bar */
+
+.status-bar {
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    background: var(--panel);
+}
+
+.status-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.app-title {
+    font-size: 16px;
+    margin: 0 12px 0 0;
+}
+
+.pill {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.pill-muted {
+    color: var(--text-dim);
+}
+
+.pill-status.status-live {
+    color: var(--green);
+    border-color: var(--green);
+}
+
+.pill-status.status-connecting,
+.pill-status.status-recovering {
+    color: var(--gold);
+    border-color: var(--gold);
+}
+
+.pill-status.status-reconnecting {
+    color: var(--red);
+    border-color: var(--red);
+}
+
+.counters {
+    margin-left: auto;
+    display: flex;
+    gap: 14px;
+    font-size: 12px;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+}
+
+.anomaly-log {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+}
+
+.anomaly-log ul {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 0;
+    max-height: 140px;
+    overflow-y: auto;
+    font-family: ui-monospace, monospace;
+}
+
+.anomaly-log li {
+    display: flex;
+    gap: 8px;
+    padding: 2px 0;
+}
+
+.anomaly-time {
+    color: var(--text-dim);
+}
+
+.anomaly-kind {
+    text-transform: uppercase;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--border);
+}
+
+/* ticker */
+
+.ticker {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.ticker-label {
+    color: var(--text-dim);
+    font-size: 13px;
+}
+
+.ticker-value {
+    font-size: 48px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+    margin: 4px 0;
+}
+
+.ticker-crashed .ticker-value,
+.ticker-pause .ticker-value {
+    color: var(--red);
+}
+
+.ticker-flight .ticker-value {
+    color: var(--green);
+}
+
+.ticker-sub {
+    color: var(--text-dim);
+    font-size: 13px;
+    min-height: 18px;
+}
+
+.ticker-history {
+    margin-top: 14px;
+}
+
+.ticker-history-label {
+    color: var(--text-dim);
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.chip {
+    border-radius: 999px;
+    padding: 3px 9px;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    border: 1px solid var(--border);
+}
+
+.chip-gray {
+    color: var(--text-dim);
+}
+
+.chip-green {
+    color: var(--green);
+    border-color: var(--green);
+}
+
+.chip-gold {
+    color: var(--gold);
+    border-color: var(--gold);
+}
+
+/* bet panel */
+
+.bet-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.bet-panel h2 {
+    font-size: 14px;
+    margin: 0;
+    color: var(--text-dim);
+}
+
+.bet-panel input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 10px 12px;
+    font-size: 16px;
+}
+
+.bet-button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.bet-button:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.bet-button.cashout {
+    background: var(--green);
+}
+
+.bet-status-line {
+    min-height: 18px;
+    font-size: 13px;
+}
+
+.bet-msg-good {
+    color: var(--green);
+}
+
+.bet-msg-bad {
+    color: var(--red);
+}
+
+.bet-msg-muted {
+    color: var(--text-dim);
+}
+
+.bet-hint {
+    margin: 0;
+    font-size: 11px;
+    color: var(--text-dim);
+}
+
+/* bets table */
+
+.bets-table {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.bets-table-caption {
+    padding: 12px 16px 4px;
+    font-size: 13px;
+    color: var(--text-dim);
+}
+
+.bets-table-header,
+.bet-row {
+    display: grid;
+    grid-template-columns: 1fr 100px 110px 110px;
+    gap: 8px;
+    padding: 0 16px;
+    align-items: center;
+}
+
+.bets-table-header {
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.bets-table-body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.bet-row {
+    height: 32px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+}
+
+.cell-amount,
+.cell-cashed {
+    text-align: right;
+}
+
+.cell-status {
+    text-align: right;
+}
+
+.status-active {
+    color: var(--text-dim);
+}
+
+.status-cashed_out {
+    color: var(--green);
+}
+
+.status-lost {
+    color: var(--red);
+}
+
+.status-pending {
+    color: var(--gold);
+}
+
+.status-rejected {
+    color: var(--red);
 }
