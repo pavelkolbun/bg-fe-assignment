@@ -366,11 +366,20 @@ export class Store {
 
   private applyBetsPlaced(msg: BetsPlacedMsg): void {
     for (const bet of msg.payload.bets) {
+      if (this.isStaleRound(bet.id)) continue;
       this.upsertBet(mapWireBet(bet));
     }
   }
 
+  private isStaleRound(betId: string): boolean {
+    const match = /^r(\d+)-/.exec(betId);
+    if (!match) return false;
+    const idRoundId = Number(match[1]);
+    return idRoundId < this.round.roundId;
+  }
+
   private applyBetUpdated(msg: BetUpdatedMsg): void {
+    if (this.isStaleRound(msg.payload.betId)) return;
     const existing = this.bets.get(msg.payload.betId);
     if (!existing) return; // extremely rare reorder edge case — see DECISIONS.md
     this.upsertBet({ ...existing, status: 'cashed_out', cashedAt: msg.payload.cashedAt });
