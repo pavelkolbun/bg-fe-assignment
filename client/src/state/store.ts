@@ -188,6 +188,7 @@ export class Store {
     this.rafHandle = null;
     if (this.orderDirty) {
       this.orderDirty = false;
+      this.order = [...this.order];
       this.orderListeners.forEach((cb) => cb());
     }
     if (this.pendingRowIds.size > 0) {
